@@ -1,0 +1,5 @@
+1. Extracting comments (Comment text, Rating, Helpful votes hv)
+2. Filter the comments based on hv
+3. Get sentiment score(ss) of all the comments.
+4. Define a ss threshhold
+5. Filter the comments on the basis of ss threshold.  
