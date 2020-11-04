@@ -9,7 +9,8 @@ class QuotesSpider(scrapy.Spider):
 
     def start_requests(self):
         # urls = ["https://www.amazon.in/product-reviews/B00F178GKS/ref=cm_cr_arp_d_paging_btm_next_2?ie=UTF8&showViewpoints=1&pageNumber=2"]
-        urls = ["https://www.amazon.in/s?k=smartphone&bbn=1389401031&rh=n%3A976419031%2Cn%3A1389401031%2Cp_n_operating_system_browse-bin%3A1485077031%2Cp_89%3AAsus%7CRedmi%7CSamsung&dc&fst=as%3Aoff&qid=1566890815&rnid=3837712031&ref=sr_in_-2_p_89_35"]
+        with open("links.txt", "r") as tp:
+            urls = tp.readlines()
         for url in urls:
             yield scrapy.Request(url=url, callback=self.rootPageParser)
 
@@ -37,12 +38,15 @@ class QuotesSpider(scrapy.Spider):
             for review in range(totalReviews):
                 t = response.css(".a-size-base .review-text")[review].css("::text").extract()
                 t = str(t)
+                hV = response.css(".a-size-base span[data-hook*=helpful]::text").extract()[review]
+                hV = re.search('^\d+',hV).group(0)
+                # import pdb;pdb.set_trace()
                 # print(t)
                 s = response.css("i[data-hook*=review]::attr(class)")[review+2].extract()
                 userName = userIds[review].split("/")[3].split(".")[-1]
                 k = re.search("-([0-5])", s)[1]
                 t = t.replace(","," ")
-                fileLine = "\n\"%s\",\"%s\",\"%s\"" % (t,k,userName)
+                fileLine = "\n\"%s\",\"%s\",\"%s\",\"%s\"" % (t,k,userName,hV)
                 fp.write(fileLine)
                 # print(k)
                 pagenumber = re.search("=([0-9]+)$", response.url)[1]
