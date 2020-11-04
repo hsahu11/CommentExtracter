@@ -37,12 +37,15 @@ class QuotesSpider(scrapy.Spider):
             for review in range(totalReviews):
                 t = response.css(".a-size-base .review-text")[review].css("::text").extract()
                 t = str(t)
+                hV = response.css(".a-size-base span[data-hook*=helpful]::text").extract()[review]
+                hV = re.search('^\d+',hV).group(0)
+                # import pdb;pdb.set_trace()
                 # print(t)
                 s = response.css("i[data-hook*=review]::attr(class)")[review+2].extract()
                 userName = userIds[review].split("/")[3].split(".")[-1]
                 k = re.search("-([0-5])", s)[1]
                 t = t.replace(","," ")
-                fileLine = "\n\"%s\",\"%s\",\"%s\"" % (t,k,userName)
+                fileLine = "\n\"%s\",\"%s\",\"%s\",\"%s\"" % (t,k,userName,hV)
                 fp.write(fileLine)
                 # print(k)
                 pagenumber = re.search("=([0-9]+)$", response.url)[1]
